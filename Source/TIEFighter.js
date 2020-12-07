@@ -13,42 +13,27 @@ window.onload = function init() {
 
         // LOAD SHADER (standard texture mapping)
         var vertexShaderSource = getTextContent("vshader");
-        var fragmentShaderSource = getTextContent("fshaderTexture");
-        textureProg = createProgram(gl, vertexShaderSource, fragmentShaderSource);
-        gl.useProgram(textureProg);
+        var fragmentShaderSource = getTextContent("fshader");
+        prog = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+        gl.useProgram(prog);
 
-        textureCoordsLoc = gl.getAttribLocation(textureProg, "vcoords");
-        textureNormalLoc = gl.getAttribLocation(textureProg, "vnormal");
-        textureTexCoordLoc = gl.getAttribLocation(textureProg, "vtexcoord");
+        renderingOptionLoc = gl.getUniformLocation(prog, "renderingOption");
+        coordsLoc = gl.getAttribLocation(prog, "vcoords");
+        normalLoc = gl.getAttribLocation(prog, "vnormal");
+        texCoordLoc = gl.getAttribLocation(prog, "vtexcoord");
+        modelviewLoc = gl.getUniformLocation(prog, "modelview");
+        projectionLoc = gl.getUniformLocation(prog, "projection");
+        normalMatrixLoc = gl.getUniformLocation(prog, "normalMatrix");
+        textureIndexLoc = gl.getUniformLocation(prog, "texture");
 
-        textureModelviewLoc = gl.getUniformLocation(textureProg, "modelview");
-        textureProjectionLoc = gl.getUniformLocation(textureProg, "projection");
-        textureNormalMatrixLoc = gl.getUniformLocation(textureProg, "normalMatrix");
-
-        gl.uniform4fv(gl.getUniformLocation(textureProg, "lightPosition"), flatten(lightPosition));
-		gl.uniformMatrix4fv(textureProjectionLoc, false, flatten(projection));
-        textureLoc = gl.getUniformLocation(textureProg, "texture");
-
-        // LOAD SHADER (no texture)
-        vertexShaderSource = getTextContent("vshader");
-        fragmentShaderSource = getTextContent("fshader");
-        noTextureProg = createProgram(gl, vertexShaderSource, fragmentShaderSource);
-        gl.useProgram(noTextureProg);
-
-        noTextureCoordsLoc = gl.getAttribLocation(noTextureProg, "vcoords");
-        noTextureNormalLoc = gl.getAttribLocation(noTextureProg, "vnormal");
-        noTextureTexCoordLoc = gl.getAttribLocation(noTextureProg, "vtexcoord");
-
-        noTextureModelviewLoc = gl.getUniformLocation(noTextureProg, "modelview");
-        noTextureProjectionLoc = gl.getUniformLocation(noTextureProg, "projection");
-        noTextureNormalMatrixLoc = gl.getUniformLocation(noTextureProg, "normalMatrix");
-
-        gl.uniform4fv(gl.getUniformLocation(noTextureProg, "lightPosition"), flatten(lightPosition));
-		gl.uniformMatrix4fv(noTextureProjectionLoc, false, flatten(projection));
+        gl.uniform4fv(gl.getUniformLocation(prog, "lightPosition"), flatten(lightPosition));
+		gl.uniformMatrix4fv(projectionLoc, false, flatten(projection));
 
         gl.enable(gl.DEPTH_TEST);
+
         rotator = new SimpleRotator(canvas, render);
         rotator.setView([0, 0, 1], [0, 1, 0], 40);
+
         initColors();
 
         if (!initTextures()) {
@@ -100,8 +85,6 @@ function render() {
 
 function initTextures() {
     try {
-        gl.useProgram(textureProg);
-
         var textureData = gl.createTexture();
         textureData.image = new Image();
         textureData.image.src = "../Textures/basicTexture.jpg";

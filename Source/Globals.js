@@ -1,23 +1,15 @@
 //#region Variables
 var gl;              //The webgl context.
 var canvas;          //The web canvas
-var noTextureProg;   //Shader program identifiers
-var textureProg;
+var prog;            //Shader program
 
-var noTextureCoordsLoc;
-var noTextureNormalLoc;
-var noTextureTexCoordLoc;
-var noTextureProjectionLoc;
-var noTextureModelviewLoc;
-var noTextureNormalMatrixLoc;
-
-var textureCoordsLoc;
-var textureNormalLoc;
-var textureTexCoordLoc;
-var textureProjectionLoc;
-var textureModelviewLoc;
-var textureNormalMatrixLoc;
-var textureLoc;
+var coordsLoc;
+var normalLoc;
+var texCoordLoc;
+var projectionLoc;
+var modelviewLoc;
+var normalMatrixLoc;
+var textureIndexLoc;
 
 var projection;   //--- projection matrix
 var modelview;    // modelview matrix

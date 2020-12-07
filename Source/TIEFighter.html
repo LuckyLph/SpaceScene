@@ -43,45 +43,7 @@ void main()
 </script>
 
 <script type="x-shader/x-fragment" id="fshader">
-precision mediump float;
-
-uniform vec4 ambientProduct;
-uniform vec4 diffuseProduct;
-uniform vec4 specularProduct;
-uniform float shininess;
-
-varying vec3 fN, fL, fE;
-varying vec3 fviewCoords;
-varying vec2 fTexCoord;
-
-void main()
-{
-
-    vec4 Color;
-
-    vec3 H = normalize( fL + fE );
-    vec4 ambient = ambientProduct;
-
-    float factorLN = max( dot(fL, fN), 0.0 );
-    vec4  diffuse = factorLN*diffuseProduct;
-
-    float factorNH = pow( max(dot(fN, H), 0.0), shininess );
-    vec4  specular = factorNH * specularProduct;
-
-    if( dot(fL, fN) < 0.0 )
-        specular = vec4(0.0, 0.0, 0.0, 1.0);
-
-    Color = ambient + diffuse + specular;
-    Color.a = 1.0;
-
-    gl_FragColor = Color;
-}
-</script>
-
-<script type="x-shader/x-fragment" id="fshaderTexture">
     precision mediump float;
-
-    uniform sampler2D texture;
 
     uniform vec4 ambientProduct;
     uniform vec4 diffuseProduct;
@@ -91,6 +53,9 @@ void main()
     varying vec3 fN, fL, fE;
     varying vec3 fviewCoords;
     varying vec2 fTexCoord;
+
+    uniform sampler2D texture;
+    uniform int renderingOption;
 
     void main() {
 
@@ -111,7 +76,12 @@ void main()
          Color = ambient + diffuse + specular;
          Color.a = 1.0;
 
-         gl_FragColor = Color * texture2D( texture, fTexCoord );
+         if(renderingOption == 2)
+           gl_FragColor = Color*texture2D( texture, fTexCoord );
+         else if(renderingOption == 1)
+           gl_FragColor = texture2D( texture, fTexCoord );		  
+         else
+           gl_FragColor = Color;		  
     }
 </script>
 
