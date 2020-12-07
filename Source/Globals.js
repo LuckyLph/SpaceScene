@@ -1,0 +1,85 @@
+//#region Variables
+var gl;              //The webgl context.
+var canvas;          //The web canvas
+var noTextureProg;   //Shader program identifiers
+var textureProg;
+
+var noTextureCoordsLoc;
+var noTextureNormalLoc;
+var noTextureTexCoordLoc;
+var noTextureProjectionLoc;
+var noTextureModelviewLoc;
+var noTextureNormalMatrixLoc;
+
+var textureCoordsLoc;
+var textureNormalLoc;
+var textureTexCoordLoc;
+var textureProjectionLoc;
+var textureModelviewLoc;
+var textureNormalMatrixLoc;
+var textureLoc;
+
+var projection;   //--- projection matrix
+var modelview;    // modelview matrix
+var flattenedmodelview;    //--- flattened modelview matrix
+var normalMatrix = mat3();  //--- create a 3X3 matrix that will affect normals
+var rotator;   // A SimpleRotator object to enable rotation by mouse dragging.
+
+var models = [];
+var colors = [];
+var textures = [];
+
+var lightPosition = vec4(20.0, 20.0, 100.0, 1.0);
+var lightAmbient = vec4(1.0, 1.0, 1.0, 1.0);
+var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
+
+//#endregion
+
+//#region Constants
+const CylinderRadius = 5;
+const CylinderHeight = 20;
+const CylinderSlices = 25;
+
+const PrismRadius = 5;
+const PrismHeight = 15;
+const PrismSlices = 3;
+
+const TorusOuterRadius = 4;
+const TorusInnerRadius = 2;
+const TorusSlices = 25;
+const TorusStacks = 25;
+
+const SphereRadius = 8;
+const SphereSlices = 25;
+const SphereStacks = 25;
+const CubeFaceLength = 10;
+
+const HemisphereInsideRadius = 5;
+const HemisphereInsideSlices = 25;
+const HemisphereInsideStacks = 25;
+
+const HemisphereOutsideRadius = 5;
+const HemisphereOutsideSlices = 25;
+const HemisphereOutsideStacks = 25;
+
+const DistanceBetweenObjects = 6;
+
+const CockpitScale = vec3(0.5, 0.5, 0.5);
+const CockpitWindowScale = vec3(0.5, 0.5, 0.5);
+const ArmScale = vec3(0.3, 0.3, 0.3);
+const WingScale = vec3(0.05, 2.0, 1.2);
+const WingPrismScale = vec3(0.4, 2.3, 0.0345)
+const WingCenterScale = vec3(0.05, 0.3, 0.35);
+const WingXScale = vec3(0.05, 2, 0.1);
+const WingHorizontalRectangleScale = vec3(0.05, 1.7, 0.1);
+const GunScale = vec3(0.06, 0.06, 0.06);
+const ArmPrismScale = vec3(0.1, 0.1, 0.4);
+const EngineSquareScale = vec3(0.2, 0.2, 0.2);
+const EngineTorusScale = vec3(0.2, 0.2, 0.2);
+const EngineHemisphereScale = vec3(0.4, 0.4, 0.4);
+
+const RotationForward = vec3(0, 0, 0);
+const RotationUp = vec3(90, 0, 0);
+const RotationRight = vec3(0, 90, 0);
+//#endregion
