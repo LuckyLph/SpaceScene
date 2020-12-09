@@ -367,7 +367,7 @@ function rotate( angle, axis )
 
 //----------------------------------------------------------------------------
 
-function scale( x, y, z )
+function scaleMatrix( x, y, z )
 {
     if ( Array.isArray(x) && x.length == 3 ) {
         z = x[2];
@@ -385,7 +385,7 @@ function scale( x, y, z )
 
 //----------------------------------------------------------------------------
 //
-//  ModelView Matrix Generators
+//  View Matrix Generators
 //
 
 function lookAt( eye, at, up )

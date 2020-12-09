@@ -1,112 +1,20 @@
-// The following function is used to create an "object" (called "model") containing all the informations needed
-// to draw a particular element (sphere, cylinder, cube,...). 
-// Note that the function "model.render" is defined inside "createModel" but it is NOT executed.
-// That function is only executed when we call it explicitly in render().
-
-function createModel(modelData, transform, color, texture) {
-
-	// the next line defines an "object" in Javascript
-	// (note that there are several ways to define an "object" in Javascript)
-	var model = {};
-	
-	// the following lines defines "members" of the "object"
-    model.coordsBuffer = gl.createBuffer();
-    model.normalBuffer = gl.createBuffer();
-    model.textureBuffer = gl.createBuffer();
-    model.indexBuffer = gl.createBuffer();
-    model.count = modelData.indices.length;
-    model.transform = transform;
-    model.color = color;
-    model.texture = texture;
-
-	// the "members" are then used to load data from "modelData" in the graphic card
-    gl.bindBuffer(gl.ARRAY_BUFFER, model.coordsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexPositions, gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, model.normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexNormals, gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER, model.textureBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexTextureCoords, gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
-
-	// The following function is NOT executed here. It is only DEFINED to be used later when we
-	// call the ".render()" method.
-    model.render = function () {
-        var ambientProduct = mult(lightAmbient, this.color.ambient);
-        var diffuseProduct = mult(lightDiffuse, this.color.diffuse);
-        var specularProduct = mult(lightSpecular, this.color.specular);
-
-        gl.enableVertexAttribArray(coordsLoc);
-        gl.enableVertexAttribArray(normalLoc);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
-        gl.vertexAttribPointer(coordsLoc, 3, gl.FLOAT, false, 0, 0);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-        gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 0, 0);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
-        gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-        gl.uniformMatrix4fv(modelviewLoc, false, flatten(modelview));    //--- load flattened modelview matrix
-        gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));  //--- load flattened normal matrix
-        gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
-        gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
-        gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
-        gl.uniform1f(gl.getUniformLocation(prog, "shininess"), this.color.shininess);
-
-        if (this.texture != null) {
-            gl.enableVertexAttribArray(texCoordLoc);    // we need texture coordinates 
-            gl.uniform1i(renderingOptionLoc, 2);        // assign "2" to renderingOption in fragment shader (texture and Phong model)
-
-            switch (this.texture.index) {
-                case 0:
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.uniform1i(textureIndexLoc, 0);
-                    break;
-                case 1:
-                    gl.activeTexture(gl.TEXTURE1);
-                    gl.uniform1i(textureIndexLoc, 1);
-                    break;
-                case 2:
-                    gl.activeTexture(gl.TEXTURE2);
-                    gl.uniform1i(textureIndexLoc, 2);
-                    break;
-                case 3:
-                    gl.activeTexture(gl.TEXTURE3);
-                    gl.uniform1i(textureIndexLoc, 3);
-                    break;
-                case 4:
-                    gl.activeTexture(gl.TEXTURE4);
-                    gl.uniform1i(textureIndexLoc, 4);
-                    break;
-            }
-
-            gl.bindTexture(gl.TEXTURE_2D, this.texture.data);
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.texture.data.image);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-            gl.generateMipmap(gl.TEXTURE_2D);  
-            
-            gl.drawElements(gl.TRIANGLES, this.count, gl.UNSIGNED_SHORT, 0);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-        }
-        else {
-            gl.disableVertexAttribArray(texCoordLoc);           // we do not need texture coordinates
-            gl.uniform1i(renderingOptionLoc, 0);                // assign "0" to renderingOption in fragment shader (no texture, only Phong model)
-            gl.drawElements(gl.TRIANGLES, this.count, gl.UNSIGNED_SHORT, 0);
-        }
-    }
-	
-	// we now return the "object".
-    return model;
-}
-
 function createTransform(coords, rotation, scale){
     var transform = {};
     transform.coords = coords;
     transform.rotation = rotation;
     transform.scale = scale;
+    transform.modelMatrix = createIdentityMatrix();
+
+    transform.update = function () {
+        this.modelMatrix = createIdentityMatrix();
+        this.modelMatrix = mult(this.modelMatrix, translate(this.coords));
+        this.modelMatrix = mult(this.modelMatrix, rotate(this.rotation[0], 1, 0, 0));
+        this.modelMatrix = mult(this.modelMatrix, rotate(this.rotation[1], 0, 1, 0));
+        this.modelMatrix = mult(this.modelMatrix, rotate(this.rotation[2], 0, 0, 1));
+        var normalMatrix = extractNormalMatrix(this.modelMatrix);  // always extract the normal matrix before scaling
+        this.modelMatrix = mult(this.modelMatrix, scaleMatrix(this.scale));
+        return normalMatrix;
+    }
 
     return transform;
 }
@@ -151,6 +59,59 @@ function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
     }
     return prog;
 }
+
+
+function initTextures() {
+    try {
+        var textureData = gl.createTexture();
+        textureData.image = new Image();
+        textureData.image.src = "../Textures/basicTexture.jpg";
+        textures["BasicTexture"] = createTexture(textureData, 0);
+
+        textureData = gl.createTexture();
+        textureData.image = new Image();
+        textureData.image.src = "../Textures/CockpitMetal.jpg";
+        textures["CockpitMetal"] = createTexture(textureData, 1);
+
+        textureData = gl.createTexture();
+        textureData.image = new Image();
+        textureData.image.src = "../Textures/blackTexture.jpg";
+        textures["BlackTexture"] = createTexture(textureData, 2);
+
+        textureData = gl.createTexture();
+        textureData.image = new Image();
+        textureData.image.src = "../Textures/blackTexture2.jpg";
+        textures["BlackTexture2"] = createTexture(textureData, 3);
+
+        textureData = gl.createTexture();
+        textureData.image = new Image();
+        textureData.image.onload = function() {
+            handleLoadedTextures();
+        }
+        textureData.image.src = "../Textures/TextureRouge.jpg";
+        textures["RedTexture"] = createTexture(textureData, 4);
+
+        return true;
+    }
+    catch (e) {
+        return false;
+    }
+}
+
+function initColors() {
+    //Emissive colors
+    colors["Black"] = createColor(vec4(0.1176, 0.1176, 0.1176, 1.0), vec4(0, 0, 0, 1.0), vec4(0, 0, 0, 1.0), 100);
+
+    //Normal colors(with textures)
+    colors["Blue"] = createColor(vec4(0.0, 0.1, 0.3, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["Grey"] = createColor(vec4(0.53, 0.48, 0.46, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["SlightlyGrey"] = createColor(vec4(0.1725, 0.1418, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["LightGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["DarkGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["VeryDarkGrey"] = createColor(vec4(0.1725, 0.1725, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["TextureGrey"] = createColor(vec4(0.4, 0.4, 0.4, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+}
+
 
 function getTextContent(elementID) {
     var element = document.getElementById(elementID);
@@ -246,4 +207,28 @@ function matrixinvert(matrix) {
     result[2][2] = (matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1]) * invdet;
 
     return result;
+}
+
+function createIdentityMatrix() {
+    return mat4(vec4(1, 0, 0, 0), vec4(0, 1, 0, 0), vec4(0, 0, 1, 0), vec4(0, 0, 0, 1));
+}
+
+function degToRad(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+function scaleVec3(a, b) {
+    var out = [];
+    out[0] = a[0] * b;
+    out[1] = a[1] * b;
+    out[2] = a[2] * b;
+  
+    return out; 
+}
+
+function getMousePosition(event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    return vec2(x, y);
 }

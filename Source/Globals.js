@@ -2,6 +2,7 @@
 var gl;              //The webgl context.
 var canvas;          //The web canvas
 var prog;            //Shader program
+var camera;
 
 var coordsLoc;
 var normalLoc;
@@ -10,14 +11,9 @@ var projectionLoc;
 var modelviewLoc;
 var normalMatrixLoc;
 var textureIndexLoc;
+                 
+var projection;             
 
-var projection;   //--- projection matrix
-var modelview;    // modelview matrix
-var flattenedmodelview;    //--- flattened modelview matrix
-var normalMatrix = mat3();  //--- create a 3X3 matrix that will affect normals
-var rotator;   // A SimpleRotator object to enable rotation by mouse dragging.
-
-var models = [];
 var colors = [];
 var textures = [];
 
@@ -25,6 +21,13 @@ var lightPosition = vec4(20.0, 20.0, 100.0, 1.0);
 var lightAmbient = vec4(1.0, 1.0, 1.0, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
 var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
+
+var deltaTime = 0;
+var lastFrameTime = 0;
+
+var currentlyPressedKeys = [];
+var firstMouseCallback = true;
+var lastMousePosition = vec2();
 
 //#endregion
 
@@ -74,4 +77,10 @@ const EngineHemisphereScale = vec3(0.4, 0.4, 0.4);
 const RotationForward = vec3(0, 0, 0);
 const RotationUp = vec3(90, 0, 0);
 const RotationRight = vec3(0, 90, 0);
+
+const MaxZoom = 90;
+const MinZoom = 30;
+const PitchCeiling = 70;
+
+const VectorUp = vec3(0, 1, 0);
 //#endregion
