@@ -10,9 +10,7 @@ var texCoordLoc;
 var projectionLoc;
 var modelviewLoc;
 var normalMatrixLoc;
-var textureIndexLoc;
-                 
-var projection;             
+var textureIndexLoc;            
 
 var colors = [];
 var textures = [];

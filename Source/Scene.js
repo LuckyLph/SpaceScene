@@ -85,7 +85,6 @@ function update(currentFrameTime) {
     deltaTime = currentFrameTime - lastFrameTime;
     lastFrameTime = currentFrameTime;
 
-    projection = perspective(camera.zoom, 1, 0.1, 200.0);
     camera.update();
 
     render();

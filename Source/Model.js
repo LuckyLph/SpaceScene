@@ -35,8 +35,7 @@ function createModel(modelData, transform, color, texture) {
         var ambientProduct = mult(lightAmbient, this.color.ambient);
         var diffuseProduct = mult(lightDiffuse, this.color.diffuse);
         var specularProduct = mult(lightSpecular, this.color.specular);
-
-        var normalMatrix = this.transform.update();
+        var modelview = mult(camera.getViewMatrix(), this.transform.getModelMatrix());
 
         gl.enableVertexAttribArray(coordsLoc);
         gl.enableVertexAttribArray(normalLoc);
@@ -49,10 +48,9 @@ function createModel(modelData, transform, color, texture) {
         gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        var modelview = mult(camera.getViewMatrix(), this.transform.modelMatrix);
         gl.uniformMatrix4fv(modelviewLoc, false, flatten(modelview));    //--- load flattened modelview matrix
-        gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));  //--- load flattened normal matrix
-        gl.uniformMatrix4fv(projectionLoc, false, flatten(projection));
+        gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(this.transform.getNormalMatrix()));  //--- load flattened normal matrix
+        gl.uniformMatrix4fv(projectionLoc, false, flatten(camera.getProjectionMatrix()));
         gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
         gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
         gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));

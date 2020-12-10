@@ -3,17 +3,24 @@ function createTransform(coords, rotation, scale){
     transform.coords = coords;
     transform.rotation = rotation;
     transform.scale = scale;
-    transform.modelMatrix = createIdentityMatrix();
 
-    transform.update = function () {
-        this.modelMatrix = createIdentityMatrix();
-        this.modelMatrix = mult(this.modelMatrix, translate(this.coords));
-        this.modelMatrix = mult(this.modelMatrix, rotate(this.rotation[0], 1, 0, 0));
-        this.modelMatrix = mult(this.modelMatrix, rotate(this.rotation[1], 0, 1, 0));
-        this.modelMatrix = mult(this.modelMatrix, rotate(this.rotation[2], 0, 0, 1));
-        var normalMatrix = extractNormalMatrix(this.modelMatrix);  // always extract the normal matrix before scaling
-        this.modelMatrix = mult(this.modelMatrix, scaleMatrix(this.scale));
-        return normalMatrix;
+    transform.getModelMatrix = function () {
+        var modelMatrix = createIdentityMatrix();
+        modelMatrix = mult(modelMatrix, translate(this.coords));
+        modelMatrix = mult(modelMatrix, rotate(this.rotation[0], 1, 0, 0));
+        modelMatrix = mult(modelMatrix, rotate(this.rotation[1], 0, 1, 0));
+        modelMatrix = mult(modelMatrix, rotate(this.rotation[2], 0, 0, 1));
+        modelMatrix = mult(modelMatrix, scaleMatrix(this.scale));
+        return modelMatrix;
+    }
+
+    transform.getNormalMatrix = function () {
+        var modelMatrix = createIdentityMatrix();
+        modelMatrix = mult(modelMatrix, translate(this.coords));
+        modelMatrix = mult(modelMatrix, rotate(this.rotation[0], 1, 0, 0));
+        modelMatrix = mult(modelMatrix, rotate(this.rotation[1], 0, 1, 0));
+        modelMatrix = mult(modelMatrix, rotate(this.rotation[2], 0, 0, 1));
+        return extractNormalMatrix(modelMatrix);  // extracted normal matrix before scaling is applied
     }
 
     return transform;

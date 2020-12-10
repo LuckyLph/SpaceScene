@@ -110,6 +110,10 @@ function createCamera(position, speed, sensitivity, zoom) {
         return lookAt(this.position, add(this.position, this.forward), this.up);
     }
 
+    camera.getProjectionMatrix = function () {
+        return perspective(this.zoom, 1, 0.1, 200.0);
+    }
+
     camera.updateVectors();
     return camera;
 }
