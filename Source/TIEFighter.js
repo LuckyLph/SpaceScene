@@ -121,9 +121,9 @@ function createTieFighter(position) {
     }
 
     model.render = function () {
-        for (var i = 0; i < model.phongModels.length; i++)
+        for (var i = 0; i < this.phongModels.length; i++)
         {
-            model.phongModels[i].render();
+            this.phongModels[i].render();
         }
     }
 

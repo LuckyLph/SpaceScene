@@ -85,6 +85,33 @@ void main()
     }
 </script>
 
+<script type="x-shader/x-vertex" id="vshaderskybox">
+  uniform mat4 projection;
+  uniform mat4 modelview;
+
+  attribute vec3 vcoords;
+
+  varying vec3 fCoords;
+
+  void main() {
+     vec4 eyeCoords = modelview * vec4(vcoords,1.0);
+     gl_Position = projection * eyeCoords;
+     fCoords = vcoords;
+  }
+</script>
+
+<script type="x-shader/x-fragment" id="fshaderskybox">
+  precision mediump float;
+
+  varying vec3 fCoords;
+
+  uniform samplerCube textureBox;
+
+  void main() {
+       gl_FragColor = textureCube(textureBox, fCoords);
+  }
+</script>
+
 <script type="text/javascript" src="../Common/simple-rotator.js"></script>
 <script type="text/javascript" src="../Common/basic-objects-IFS.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
@@ -93,6 +120,7 @@ void main()
 <script type="text/javascript" src="Model.js"></script>
 <script type="text/javascript" src="Camera.js"></script>
 <script type="text/javascript" src="TIEFighter.js"></script>
+<script type="text/javascript" src="Skybox.js"></script>
 <script type="text/javascript" src="Scene.js"></script>
 
 </head>

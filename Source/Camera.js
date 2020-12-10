@@ -13,9 +13,9 @@ function createCamera(position, speed, sensitivity, zoom) {
 
     camera.updateVectors = function () {
         var forward = vec3();
-        forward[0] = Math.cos(degToRad(this.yaw)) * Math.cos(degToRad(this.pitch));
-        forward[1] = Math.sin(degToRad(this.pitch));
-        forward[2] = Math.sin(degToRad(this.yaw)) * Math.cos(degToRad(this.pitch));
+        forward[0] = Math.cos(degreeToRadian(this.yaw)) * Math.cos(degreeToRadian(this.pitch));
+        forward[1] = Math.sin(degreeToRadian(this.pitch));
+        forward[2] = Math.sin(degreeToRadian(this.yaw)) * Math.cos(degreeToRadian(this.pitch));
         this.forward = normalize(forward);
         this.right = normalize(cross(this.forward, VectorUp));
         this.up = normalize(cross(this.right, this.forward));
@@ -111,7 +111,7 @@ function createCamera(position, speed, sensitivity, zoom) {
     }
 
     camera.getProjectionMatrix = function () {
-        return perspective(this.zoom, 1, 0.1, 200.0);
+        return perspective(this.zoom, Math.floor(window.innerWidth * 0.98) / Math.floor(window.innerHeight * 0.98), 0.1, 2000);
     }
 
     camera.updateVectors();

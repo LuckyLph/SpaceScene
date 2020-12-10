@@ -2,6 +2,7 @@
 var gl;              //The webgl context.
 var canvas;          //The web canvas
 var prog;            //Shader program
+var progSkybox;
 var camera;
 
 var coordsLoc;
@@ -10,10 +11,16 @@ var texCoordLoc;
 var projectionLoc;
 var modelviewLoc;
 var normalMatrixLoc;
-var textureIndexLoc;            
+var textureIndexLoc;
+
+var skyboxVcoordsLoc;
+var skyboxModelviewLoc;
+var skyboxProjectionLoc;
+var textureBoxLoc;
 
 var colors = [];
 var textures = [];
+var textureMaps = [];
 
 var lightPosition = vec4(20.0, 20.0, 100.0, 1.0);
 var lightAmbient = vec4(1.0, 1.0, 1.0, 1.0);
@@ -24,8 +31,6 @@ var deltaTime = 0;
 var lastFrameTime = 0;
 
 var currentlyPressedKeys = [];
-var firstMouseCallback = true;
-var lastMousePosition = vec2();
 
 //#endregion
 
