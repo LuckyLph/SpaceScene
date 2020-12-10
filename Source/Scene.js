@@ -11,9 +11,17 @@ window.onload = function init() {
             throw "Could not create WebGL context.";
         }
 
-        camera = createCamera(createTransform(vec3(0, 0, 30), RotationForward, vec3(1, 1, 1)), 1, 1, MaxZoom);
+        window.addEventListener("resize", onresize);
+        onresize();  // size the canvas to the current window width and height
 
-        // LOAD SHADER (standard texture mapping)
+        document.onkeydown = handleKeyDown;
+        document.onkeyup = handleKeyUp;
+        canvas.addEventListener('wheel', handleMouseScroll);
+        //canvas.addEventListener('mousemove', handleMouseMovement);
+
+        camera = createCamera(vec3(0, 0, 30), 0.6, 1.5, MaxZoom);
+
+        // load shaders
         var vertexShaderSource = getTextContent("vshader");
         var fragmentShaderSource = getTextContent("fshader");
         prog = createProgram(gl, vertexShaderSource, fragmentShaderSource);
@@ -37,15 +45,7 @@ window.onload = function init() {
         if (!initTextures()) {
             throw "Failed to load textures!";
         }
-        tieFighter = createTieFighter(createTransform(vec3(0, 0, 0), vec3(0, 0, 0), vec3(1, 1, 1)));
-
-        window.addEventListener("resize", onresize);
-   	    onresize();  // size the canvas to the current window width and height
-
-        document.onkeydown = handleKeyDown;
-        document.onkeyup = handleKeyUp;
-        canvas.addEventListener('wheel', handleMouseScroll);
-        //canvas.addEventListener('mousemove', handleMouseMovement);
+        tieFighter = createTieFighter(vec3(0, 0, 0));
     }
     catch (e) {
         document.getElementById("message").innerHTML =
@@ -85,13 +85,15 @@ function update(currentFrameTime) {
     deltaTime = currentFrameTime - lastFrameTime;
     lastFrameTime = currentFrameTime;
 
+    projection = perspective(camera.zoom, 1, 0.1, 200.0);
+    camera.update();
+
     render();
     requestAnimationFrame(update);
 }
 
 function render() {
-    projection = perspective(camera.zoom, 1, 0.1, 200.0);
-    camera.update();
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     tieFighter.render();
 }
 

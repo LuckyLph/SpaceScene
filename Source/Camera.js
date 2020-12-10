@@ -1,6 +1,6 @@
-function createCamera(transform, speed, sensitivity, zoom) {
+function createCamera(position, speed, sensitivity, zoom) {
     var camera = {};
-    camera.transform = transform;
+    camera.position = position;
     camera.speed = speed;
     camera.sensitivity = sensitivity;
     camera.zoom = zoom;
@@ -26,27 +26,27 @@ function createCamera(transform, speed, sensitivity, zoom) {
 
         // A
         if (currentlyPressedKeys[65] == true) {
-            this.transform.coords = subtract(this.transform.coords, normalize(scaleVec3(camera.right, velocity)));
+            this.position = subtract(this.position, normalize(scaleVec3(camera.right, velocity)));
         }
         // D
         if (currentlyPressedKeys[68] == true) {
-            this.transform.coords = add(this.transform.coords, normalize(scaleVec3(camera.right, velocity)));
+            this.position = add(this.position, normalize(scaleVec3(camera.right, velocity)));
         }
         // W
         if (currentlyPressedKeys[87] == true) {
-            this.transform.coords = add(this.transform.coords, normalize(scaleVec3(this.forward, velocity)));
+            this.position = add(this.position, normalize(scaleVec3(this.forward, velocity)));
         }
         // S
         if (currentlyPressedKeys[83] == true) {
-            this.transform.coords = subtract(this.transform.coords, normalize(scaleVec3(this.forward, velocity)));
+            this.position = subtract(this.position, normalize(scaleVec3(this.forward, velocity)));
         }
         // Q
         if (currentlyPressedKeys[81] == true) {
-            this.transform.coords = add(this.transform.coords, normalize(scaleVec3(vec3(0, 1, 0), velocity)));
+            this.position = subtract(this.position, normalize(scaleVec3(VectorUp, velocity)));
         }
         // E
         if (currentlyPressedKeys[69] == true) {
-            this.transform.coords = subtract(this.transform.coords, normalize(scaleVec3(vec3(0, 1, 0), velocity)));
+            this.position = add(this.position, normalize(scaleVec3(VectorUp, velocity)));
         }
         // Left Arrow
         if (currentlyPressedKeys[37] == true) {
@@ -85,11 +85,11 @@ function createCamera(transform, speed, sensitivity, zoom) {
 
         if (constrainPitch)
         {
-            if (this.pitch > 89.0){
-                this.pitch = 89.0;
+            if (this.pitch > PitchCeiling){
+                this.pitch = PitchCeiling;
             }
-            if (this.pitch < -89.0) {
-                this.pitch = -89.0;
+            if (this.pitch < -PitchCeiling) {
+                this.pitch = -PitchCeiling;
             }
         }
 
@@ -107,7 +107,7 @@ function createCamera(transform, speed, sensitivity, zoom) {
     }
     
     camera.getViewMatrix = function () {
-        return lookAt(this.transform.coords, add(this.transform.coords, this.forward), this.up);
+        return lookAt(this.position, add(this.position, this.forward), this.up);
     }
 
     camera.updateVectors();
