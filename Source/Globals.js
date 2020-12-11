@@ -30,6 +30,9 @@ var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 var deltaTime = 0;
 var lastFrameTime = 0;
 
+var actualPanelWidth;
+var actualPanelHeight;
+
 var currentlyPressedKeys = [];
 
 //#endregion
@@ -81,9 +84,11 @@ const RotationForward = vec3(0, 0, 0);
 const RotationUp = vec3(90, 0, 0);
 const RotationRight = vec3(0, 90, 0);
 
-const MaxZoom = 90;
-const MinZoom = 30;
+const MaxFov = 90;
+const MinFov = 30;
 const PitchCeiling = 70;
+const DefaultSpeed = 1;
+const DefaultSensitivity = 0.6;
 
 const VectorUp = vec3(0, 1, 0);
 //#endregion

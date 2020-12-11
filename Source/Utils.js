@@ -36,10 +36,10 @@ function createColor(ambient, diffuse, specular, shininess){
     return color;
 }
 
-function createTexture(textureData, textureIndex) {
+function createTexture(textureData, index) {
     var texture = {};
     texture.data = textureData;
-    texture.index = textureIndex;
+    texture.index = index;
 
     return texture;
 }
@@ -79,8 +79,8 @@ function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
 
 function initTextures() {
     var currentIndex = 0
-    var skyboxPaths = ["../TextureMaps/Skybox1/2.jpg", "../TextureMaps/Skybox1/6.jpg", "../TextureMaps/Skybox1/3.jpg",
-                       "../TextureMaps/Skybox1/4.jpg", "../TextureMaps/Skybox1/1.jpg", "../TextureMaps/Skybox1/5.jpg"];
+    var skyboxPaths = ["../TextureMaps/Skybox1/1.jpg", "../TextureMaps/Skybox1/2.jpg", "../TextureMaps/Skybox1/3.jpg",
+                       "../TextureMaps/Skybox1/4.jpg", "../TextureMaps/Skybox1/5.jpg", "../TextureMaps/Skybox1/6.jpg"];
 
     currentIndex = loadTexture(currentIndex, "../Textures/basicTexture.jpg", "BasicTexture");
     currentIndex = loadTexture(currentIndex, "../Textures/CockpitMetal.jpg", "CockpitMetal");
@@ -96,9 +96,7 @@ function loadTexture(currentIndex, path, name, isLastTexture = false) {
     var textureData = gl.createTexture();
     textureData.image = new Image();
     if (isLastTexture)
-        textureData.image.onload = function () {
-            requestAnimationFrame(update);
-        }
+        textureData.image.onload = initLoop;
     textureData.image.src = path;
     textures[name] = createTexture(textureData, currentIndex);
     return ++currentIndex;
@@ -110,15 +108,16 @@ function loadTextureMap(currentIndex, paths, name, isLastTexture = false) {
 
     for (var i = 0; i < 6; i++) {
         images[i] = new Image();
-        if (i == 5 && isLastTexture) {
-            images[i].onload = function () {
-                requestAnimationFrame(update);
-            }
-        }
+        if (i == 5 && isLastTexture)
+            images[i].onload = initLoop;
         images[i].src = paths[i];
     }
     textureMaps[name] = createTextureMap(textureData, images, currentIndex);
     return ++currentIndex;
+}
+
+function initLoop(){
+    requestAnimationFrame(update);
 }
 
 function initColors() {
@@ -158,15 +157,20 @@ function sleep(milliseconds) {
 }
 
 function onresize() {  
-    var actualPanelWidth = Math.floor(window.innerWidth * 0.98);
-    var actualPanelHeight = Math.floor(window.innerHeight * 0.98);
-    
-    var minDimension = Math.min(actualPanelWidth, actualPanelHeight);
+    actualPanelWidth = Math.floor(window.innerWidth);
+    actualPanelHeight = Math.floor(window.innerHeight);
       
     canvas.width  = actualPanelWidth;
     canvas.height = actualPanelHeight;
     
     gl.viewport(0, 0, canvas.width, canvas.height);
+}
+
+function getMousePosition(e) {
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    return vec2(x, y);
 }
 
 //#region Math
@@ -185,13 +189,6 @@ function scaleVec3(a, b) {
     out[2] = a[2] * b;
   
     return out; 
-}
-
-function getMousePosition(event) {
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-    return vec2(x, y);
 }
 
 function unflatten(matrix) {

@@ -3,7 +3,6 @@ var skybox;
 
 var firstMouseCallback = true;
 var lastMousePosition = vec2();
-var sceneIsLoaded = false;
 
 window.onload = function init() {
     try {
@@ -14,10 +13,9 @@ window.onload = function init() {
         initColors();
         initTextures()
 
-        camera = createCamera(vec3(0, 0, 30), 0.6, 1.5, MaxZoom);
+        camera = createCamera(vec3(0, 0, 30), DefaultSpeed, DefaultSensitivity, MaxFov);
         tieFighter = createTieFighter(vec3(0, 0, 0));
         skybox = createSkybox(cube(2000), createTransform(camera.position, RotationForward, vec3(1, 1, 1)), textureMaps["skybox"])
-        sceneIsLoaded = true;
     }
     catch (e) {
         document.getElementById("message").innerHTML =
@@ -27,7 +25,6 @@ window.onload = function init() {
 }
 
 function update(currentFrameTime) {
-    if (sceneIsLoaded) {
         currentFrameTime = currentFrameTime * 0.001;
         deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
@@ -37,7 +34,6 @@ function update(currentFrameTime) {
 
         render();
         requestAnimationFrame(update);
-    }
 }
 
 function render() {
@@ -54,22 +50,24 @@ function handleKeyUp(event) {
     currentlyPressedKeys[event.keyCode] = false;
 }
 
-function handleMouseMovement(event) {
-    var mousePosition = getMousePosition(event);
-    if (firstMouseCallback) {
-        lastMousePosition[0] = mousePosition[0];
-        lastMousePosition[1] = mousePosition[1];
-        firstMouseCallback = false;
-    }
-    var xoffset = mousePosition[0] - lastMousePosition[0];
-    var yoffset = lastMousePosition[1] - mousePosition[1];
-    lastMousePosition = mousePosition;
-
-    camera.handleRotation(xoffset, yoffset);
-}
-
 function handleMouseScroll(event) {
     camera.handleZoom(event.deltaY);
+}
+
+function updateMousePosition(e) {
+    var currentMousePosition = vec2();
+    currentMousePosition[0] = lastMousePosition[0] + e.movementX;
+    currentMousePosition[1] = lastMousePosition[1] + e.movementY;
+
+    var xoffset = currentMousePosition[0] - lastMousePosition[0];
+    var yoffset = lastMousePosition[1] - currentMousePosition[1];
+    camera.handleRotation(xoffset, yoffset);
+
+    currentMousePosition[0] = Math.min(currentMousePosition[0], actualPanelWidth);
+    currentMousePosition[0] = Math.max(currentMousePosition[0], 0);
+    currentMousePosition[1] = Math.min(currentMousePosition[1], actualPanelHeight);
+    currentMousePosition[1] = Math.max(currentMousePosition[1], 0);
+    lastMousePosition = currentMousePosition;
 }
 
 function initShaderPrograms() {
@@ -110,7 +108,7 @@ function initEvents() {
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
     canvas.addEventListener('wheel', handleMouseScroll);
-    //canvas.addEventListener('mousemove', handleMouseMovement);
+    initPointerLock();
 }
 
 function initWebGL() {
@@ -122,4 +120,28 @@ function initWebGL() {
         throw "Could not create WebGL context.";
     }
     gl.enable(gl.DEPTH_TEST);
+}
+
+function initPointerLock () {
+
+    // pointer lock object forking for cross browser
+    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+    document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+
+    canvas.onclick = function() {
+        canvas.requestPointerLock();
+    }
+
+    // Hook pointer lock state change events for different browsers
+    document.addEventListener('pointerlockchange', lockChangeAlert, false);
+    document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+}
+
+function lockChangeAlert() {
+    if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
+        document.addEventListener("mousemove", updateMousePosition, false);
+    }
+    else {
+        document.removeEventListener("mousemove", updateMousePosition, false);
+    }
 }
