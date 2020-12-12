@@ -86,7 +86,11 @@ function initTextures() {
     currentIndex = loadTexture(currentIndex, "../Textures/CockpitMetal.jpg", "CockpitMetal");
     currentIndex = loadTexture(currentIndex, "../Textures/blackTexture.jpg", "BlackTexture");
     currentIndex = loadTexture(currentIndex, "../Textures/blackTexture2.jpg", "BlackTexture2");
-    currentIndex = loadTexture(currentIndex, "../Textures/TextureRouge.jpg", "RedTexture");
+    currentIndex = loadTexture(currentIndex, "../Textures/redTexture.jpg", "RedTexture");
+    currentIndex = loadTexture(currentIndex, "../Textures/sunmap.jpg", "sunmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/earthmap1k.jpg", "earthmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/superearthmap.jpg", "superearthmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/moonmap.jpg", "moonmap");
 
     currentIndex = 0;
     currentIndex = loadTextureMap(currentIndex, skyboxPaths, "skybox", true);

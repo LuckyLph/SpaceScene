@@ -1,8 +1,9 @@
 var tieFighter;
 var skybox;
-
-var firstMouseCallback = true;
-var lastMousePosition = vec2();
+var sun;
+var earth;
+var moon;
+var sceneObjects = [];
 
 window.onload = function init() {
     try {
@@ -15,6 +16,8 @@ window.onload = function init() {
 
         camera = createCamera(vec3(0, 0, 30), DefaultSpeed, DefaultSensitivity, MaxFov);
         tieFighter = createTieFighter(vec3(0, 0, 0));
+        earth = createModel(uvSphere(EarthRadius * 2, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(0, 0, 200), vec3(-90, 0, 0), vec3(1, 1, 1)),
+                                     colors["TextureGrey"], textures["superearthmap"]);
         skybox = createSkybox(cube(2000), createTransform(camera.position, RotationForward, vec3(1, 1, 1)), textureMaps["skybox"])
     }
     catch (e) {
@@ -25,21 +28,36 @@ window.onload = function init() {
 }
 
 function update(currentFrameTime) {
-        currentFrameTime = currentFrameTime * 0.001;
-        deltaTime = currentFrameTime - lastFrameTime;
-        lastFrameTime = currentFrameTime;
+        updateDeltaTime(currentFrameTime);
 
         camera.update();
         skybox.update();
+        earth.transform.rotation[2] = earth.transform.rotation[2] + earthRotationSpeed * deltaTime;
+        //tieFighter.move(scaleVec3(vec3(0, 0, 1), deltaTime));
 
         render();
         requestAnimationFrame(update);
 }
 
+function updateDeltaTime(currentFrameTime) {
+    currentFrameTime = currentFrameTime * 0.001;
+    deltaTime = currentFrameTime - lastFrameTime;
+    lastFrameTime = currentFrameTime;
+    fps = Math.round(1 / deltaTime);
+
+    timeElapsed = timeElapsed + deltaTime;
+    if (timeElapsed > 1) {
+        console.log("fps : " + fps);
+        timeElapsed = 0;
+    }
+}
+
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     skybox.render();
     tieFighter.render();
+    earth.render();
 }
 
 function handleKeyDown(event) {

@@ -127,5 +127,13 @@ function createTieFighter(position) {
         }
     }
 
+    model.move = function (movement) {
+        for (var i = 0; i < this.phongModels.length; i++)
+        {
+            this.phongModels[i].transform.coords = add(this.phongModels[i].transform.coords, movement);
+        }
+        this.position = add(this.position, movement);
+    }
+
     return model;
 }

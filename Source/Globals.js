@@ -29,6 +29,12 @@ var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 
 var deltaTime = 0;
 var lastFrameTime = 0;
+var timeElapsed = 0;
+var fps;
+
+var firstMouseCallback = true;
+var lastMousePosition = vec2();
+var earthRotationSpeed = 2;
 
 var actualPanelWidth;
 var actualPanelHeight;
@@ -55,6 +61,7 @@ const SphereRadius = 8;
 const SphereSlices = 25;
 const SphereStacks = 25;
 const CubeFaceLength = 10;
+const EarthRadius = 60;
 
 const HemisphereInsideRadius = 5;
 const HemisphereInsideSlices = 25;
@@ -87,7 +94,7 @@ const RotationRight = vec3(0, 90, 0);
 const MaxFov = 90;
 const MinFov = 30;
 const PitchCeiling = 70;
-const DefaultSpeed = 1;
+const DefaultSpeed = 25;
 const DefaultSensitivity = 0.6;
 
 const VectorUp = vec3(0, 1, 0);

@@ -22,31 +22,35 @@ function createCamera(position, speed, sensitivity, zoom) {
     }
 
     camera.update = function () {
-        var velocity = this.speed * deltaTime;
+        var speed = this.speed;
+        // LeftShift
+        if (currentlyPressedKeys[16] == true) {
+            speed = speed * 2;
+        }
 
         // A
         if (currentlyPressedKeys[65] == true) {
-            this.position = subtract(this.position, normalize(scaleVec3(camera.right, velocity)));
+            this.position = subtract(this.position, scaleVec3(camera.right, speed * deltaTime));
         }
         // D
         if (currentlyPressedKeys[68] == true) {
-            this.position = add(this.position, normalize(scaleVec3(camera.right, velocity)));
+            this.position = add(this.position, scaleVec3(camera.right, speed * deltaTime));
         }
         // W
         if (currentlyPressedKeys[87] == true) {
-            this.position = add(this.position, normalize(scaleVec3(this.forward, velocity)));
+            this.position = add(this.position, scaleVec3(this.forward, speed * deltaTime));
         }
         // S
         if (currentlyPressedKeys[83] == true) {
-            this.position = subtract(this.position, normalize(scaleVec3(this.forward, velocity)));
+            this.position = subtract(this.position, scaleVec3(this.forward, speed * deltaTime));
         }
         // Q
         if (currentlyPressedKeys[81] == true) {
-            this.position = subtract(this.position, normalize(scaleVec3(VectorUp, velocity)));
+            this.position = subtract(this.position, scaleVec3(VectorUp, speed * deltaTime));
         }
         // E
         if (currentlyPressedKeys[69] == true) {
-            this.position = add(this.position, normalize(scaleVec3(VectorUp, velocity)));
+            this.position = add(this.position, scaleVec3(VectorUp, speed * deltaTime));
         }
         // Left Arrow
         if (currentlyPressedKeys[37] == true) {
@@ -83,10 +87,8 @@ function createCamera(position, speed, sensitivity, zoom) {
 
         if (constrainPitch)
         {
-            if (this.pitch > PitchCeiling)
-                this.pitch = PitchCeiling;
-            if (this.pitch < -PitchCeiling)
-                this.pitch = -PitchCeiling;
+            this.pitch = Math.min(this.pitch, PitchCeiling);
+            this.pitch = Math.max(this.pitch, -PitchCeiling);
         }
 
         this.updateVectors();
