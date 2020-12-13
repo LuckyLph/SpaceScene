@@ -91,7 +91,7 @@ const RotationForward = vec3(0, 0, 0);
 const RotationUp = vec3(90, 0, 0);
 const RotationRight = vec3(0, 90, 0);
 
-const MaxFov = 90;
+const MaxFov = 70;
 const MinFov = 30;
 const PitchCeiling = 70;
 const DefaultSpeed = 25;

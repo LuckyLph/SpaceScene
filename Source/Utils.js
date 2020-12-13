@@ -76,26 +76,6 @@ function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
     return prog;
 }
 
-
-function initTextures() {
-    var currentIndex = 0
-    var skyboxPaths = ["../TextureMaps/Skybox1/1.jpg", "../TextureMaps/Skybox1/2.jpg", "../TextureMaps/Skybox1/3.jpg",
-                       "../TextureMaps/Skybox1/4.jpg", "../TextureMaps/Skybox1/5.jpg", "../TextureMaps/Skybox1/6.jpg"];
-
-    currentIndex = loadTexture(currentIndex, "../Textures/basicTexture.jpg", "BasicTexture");
-    currentIndex = loadTexture(currentIndex, "../Textures/CockpitMetal.jpg", "CockpitMetal");
-    currentIndex = loadTexture(currentIndex, "../Textures/blackTexture.jpg", "BlackTexture");
-    currentIndex = loadTexture(currentIndex, "../Textures/blackTexture2.jpg", "BlackTexture2");
-    currentIndex = loadTexture(currentIndex, "../Textures/redTexture.jpg", "RedTexture");
-    currentIndex = loadTexture(currentIndex, "../Textures/sunmap.jpg", "sunmap");
-    currentIndex = loadTexture(currentIndex, "../Textures/earthmap1k.jpg", "earthmap");
-    currentIndex = loadTexture(currentIndex, "../Textures/superearthmap.jpg", "superearthmap");
-    currentIndex = loadTexture(currentIndex, "../Textures/moonmap.jpg", "moonmap");
-
-    currentIndex = 0;
-    currentIndex = loadTextureMap(currentIndex, skyboxPaths, "skybox", true);
-}
-
 function loadTexture(currentIndex, path, name, isLastTexture = false) {
     var textureData = gl.createTexture();
     textureData.image = new Image();
@@ -120,24 +100,22 @@ function loadTextureMap(currentIndex, paths, name, isLastTexture = false) {
     return ++currentIndex;
 }
 
-function initLoop(){
-    requestAnimationFrame(update);
+function initLoop() {
+    window.requestAnimFrame(update);
 }
 
-function initColors() {
-    //Emissive colors
-    colors["Black"] = createColor(vec4(0.1176, 0.1176, 0.1176, 1.0), vec4(0, 0, 0, 1.0), vec4(0, 0, 0, 1.0), 100);
-
-    //Normal colors(with textures)
-    colors["Blue"] = createColor(vec4(0.0, 0.1, 0.3, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["Grey"] = createColor(vec4(0.53, 0.48, 0.46, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["SlightlyGrey"] = createColor(vec4(0.1725, 0.1418, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["LightGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["DarkGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["VeryDarkGrey"] = createColor(vec4(0.1725, 0.1725, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["TextureGrey"] = createColor(vec4(0.4, 0.4, 0.4, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+function handleCanvasClick() {
+    canvas.requestPointerLock();
 }
 
+function lockChangeAlert() {
+    if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
+        document.addEventListener("mousemove", updateMousePosition, false);
+    }
+    else {
+        document.removeEventListener("mousemove", updateMousePosition, false);
+    }
+}
 
 function getTextContent(elementID) {
     var element = document.getElementById(elementID);
@@ -175,6 +153,34 @@ function getMousePosition(e) {
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
     return vec2(x, y);
+}
+
+function handleKeyDown(event) {
+    currentlyPressedKeys[event.keyCode] = true;
+}
+
+function handleKeyUp(event) {
+    currentlyPressedKeys[event.keyCode] = false;
+}
+
+function handleMouseScroll(event) {
+    camera.handleZoom(event.deltaY);
+}
+
+function updateMousePosition(e) {
+    var currentMousePosition = vec2();
+    currentMousePosition[0] = lastMousePosition[0] + e.movementX;
+    currentMousePosition[1] = lastMousePosition[1] + e.movementY;
+
+    var xoffset = currentMousePosition[0] - lastMousePosition[0];
+    var yoffset = lastMousePosition[1] - currentMousePosition[1];
+    camera.handleRotation(xoffset, yoffset);
+
+    currentMousePosition[0] = Math.min(currentMousePosition[0], actualPanelWidth);
+    currentMousePosition[0] = Math.max(currentMousePosition[0], 0);
+    currentMousePosition[1] = Math.min(currentMousePosition[1], actualPanelHeight);
+    currentMousePosition[1] = Math.max(currentMousePosition[1], 0);
+    lastMousePosition = currentMousePosition;
 }
 
 //#region Math

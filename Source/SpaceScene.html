@@ -27,23 +27,16 @@ void main()
 {
     vec4 eyeCoords = modelview * vec4(vcoords,1.0);
     gl_Position = projection * eyeCoords;
-
     vec3 pos = eyeCoords.xyz;
 
-    // Modify light position according to the 
-    // transformations applied if you want the light
-    // to move with the objects
-    // vec3 light = (modelview * lightPosition).xyz;
+    // Modify light position according to the transformations applied if you want the light to move with the objects
+    //vec3 light = (modelview * lightPosition).xyz;
     vec3 light = (lightPosition).xyz;
 
-    // Now compute vectors L, E and N.
-    // Note that N is affected by the 
-    // transformations applied.
-
+    // Now compute vectors L, E and N. Note that N is affected by the transformations applied.
     fL = normalize( light - pos );
     fE = normalize(-pos);
     fN = normalMatrix * normalize(vnormal);
-
 
     fviewCoords = eyeCoords.xyz;
     fTexCoord = vtexcoord;
@@ -123,6 +116,8 @@ void main()
 <script type="text/javascript" src="../Common/simple-rotator.js"></script>
 <script type="text/javascript" src="../Common/basic-objects-IFS.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/extract-data-from-obj-file.js"></script>
 <script type="text/javascript" src="Globals.js"></script>
 <script type="text/javascript" src="Utils.js"></script>
 <script type="text/javascript" src="Model.js"></script>

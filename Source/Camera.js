@@ -65,15 +65,13 @@ function createCamera(position, speed, sensitivity, zoom) {
         // Up Arrow
         if (currentlyPressedKeys[38] == true) {
             this.pitch = this.pitch + 100 * (this.sensitivity * deltaTime);
-            if (this.pitch > PitchCeiling)
-                this.pitch = PitchCeiling;
+            this.pitch = Math.min(this.pitch, PitchCeiling);
             this.updateVectors();
         }
         // Down Arrow
         if (currentlyPressedKeys[40] == true) {
             this.pitch = this.pitch - 100 * (this.sensitivity * deltaTime);
-            if (this.pitch < -PitchCeiling)
-                this.pitch = -PitchCeiling;
+            this.pitch = Math.max(this.pitch, -PitchCeiling);
             this.updateVectors();
         }
     }
@@ -96,10 +94,8 @@ function createCamera(position, speed, sensitivity, zoom) {
 
     camera.handleZoom = function (yoffset) {
         this.zoom = this.zoom + yoffset;
-        if (this.zoom < MinFov)
-            this.zoom = MinFov;
-        if (this.zoom > MaxFov)
-            this.zoom = MaxFov; 
+        this.zoom = Math.min(this.zoom, MaxFov);
+        this.zoom = Math.max(this.zoom, MinFov);
     }
     
     camera.getViewMatrix = function () {

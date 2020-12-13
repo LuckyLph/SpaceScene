@@ -12,31 +12,35 @@ window.onload = function init() {
         initShaderPrograms();
         initEvents();
         initColors();
-        initTextures()
+        initTextures();
+        onresize();
 
         camera = createCamera(vec3(0, 0, 30), DefaultSpeed, DefaultSensitivity, MaxFov);
         tieFighter = createTieFighter(vec3(0, 0, 0));
-        earth = createModel(uvSphere(EarthRadius * 2, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(0, 0, 200), vec3(-90, 0, 0), vec3(1, 1, 1)),
-                                     colors["TextureGrey"], textures["superearthmap"]);
+        earth = createModel(uvSphere(EarthRadius, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(0, 0, 150), vec3(-90, 0, 0), vec3(1, 1, 1)),
+                                     colors["TextureGrey"], textures["earthmap"]);
         skybox = createSkybox(cube(2000), createTransform(camera.position, RotationForward, vec3(1, 1, 1)), textureMaps["skybox"])
     }
     catch (e) {
-        document.getElementById("message").innerHTML =
-             "Could not initialize WebGL: " + e;
+        document.getElementById("message").innerHTML = "Could not initialize WebGL: " + e;
         return;
     }
 }
 
 function update(currentFrameTime) {
-        updateDeltaTime(currentFrameTime);
+    updateDeltaTime(currentFrameTime);
 
-        camera.update();
-        skybox.update();
-        earth.transform.rotation[2] = earth.transform.rotation[2] + earthRotationSpeed * deltaTime;
-        //tieFighter.move(scaleVec3(vec3(0, 0, 1), deltaTime));
+    updateScene();
 
-        render();
-        requestAnimationFrame(update);
+    render();
+    window.requestAnimFrame(update);
+}
+
+function updateScene() {
+    camera.update();
+    skybox.update();
+    earth.transform.rotation[2] = earth.transform.rotation[2] + earthRotationSpeed * deltaTime;
+    //tieFighter.move(scaleVec3(vec3(1, 1, 1), deltaTime));
 }
 
 function updateDeltaTime(currentFrameTime) {
@@ -58,34 +62,6 @@ function render() {
     skybox.render();
     tieFighter.render();
     earth.render();
-}
-
-function handleKeyDown(event) {
-    currentlyPressedKeys[event.keyCode] = true;
-}
-
-function handleKeyUp(event) {
-    currentlyPressedKeys[event.keyCode] = false;
-}
-
-function handleMouseScroll(event) {
-    camera.handleZoom(event.deltaY);
-}
-
-function updateMousePosition(e) {
-    var currentMousePosition = vec2();
-    currentMousePosition[0] = lastMousePosition[0] + e.movementX;
-    currentMousePosition[1] = lastMousePosition[1] + e.movementY;
-
-    var xoffset = currentMousePosition[0] - lastMousePosition[0];
-    var yoffset = lastMousePosition[1] - currentMousePosition[1];
-    camera.handleRotation(xoffset, yoffset);
-
-    currentMousePosition[0] = Math.min(currentMousePosition[0], actualPanelWidth);
-    currentMousePosition[0] = Math.max(currentMousePosition[0], 0);
-    currentMousePosition[1] = Math.min(currentMousePosition[1], actualPanelHeight);
-    currentMousePosition[1] = Math.max(currentMousePosition[1], 0);
-    lastMousePosition = currentMousePosition;
 }
 
 function initShaderPrograms() {
@@ -120,13 +96,20 @@ function initShaderPrograms() {
 }
 
 function initEvents() {
-    window.addEventListener("resize", onresize);
-    onresize();
+    // pointer lock object forking for cross browser
+    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+    document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+
+    canvas.onclick = handleCanvasClick;
+    canvas.addEventListener('wheel', handleMouseScroll);
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
-    canvas.addEventListener('wheel', handleMouseScroll);
-    initPointerLock();
+    // Hook pointer lock state change events for different browsers
+    document.addEventListener('pointerlockchange', lockChangeAlert, false);
+    document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+
+    window.addEventListener("resize", onresize);
 }
 
 function initWebGL() {
@@ -140,26 +123,34 @@ function initWebGL() {
     gl.enable(gl.DEPTH_TEST);
 }
 
-function initPointerLock () {
+function initColors() {
+    //Emissive colors
+    colors["Black"] = createColor(vec4(0.1176, 0.1176, 0.1176, 1.0), vec4(0, 0, 0, 1.0), vec4(0, 0, 0, 1.0), 100);
 
-    // pointer lock object forking for cross browser
-    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-    document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
-
-    canvas.onclick = function() {
-        canvas.requestPointerLock();
-    }
-
-    // Hook pointer lock state change events for different browsers
-    document.addEventListener('pointerlockchange', lockChangeAlert, false);
-    document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+    //Normal colors(with textures)
+    colors["Blue"] = createColor(vec4(0.0, 0.1, 0.3, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["Grey"] = createColor(vec4(0.53, 0.48, 0.46, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["SlightlyGrey"] = createColor(vec4(0.1725, 0.1418, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["LightGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["DarkGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["VeryDarkGrey"] = createColor(vec4(0.1725, 0.1725, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    colors["TextureGrey"] = createColor(vec4(0.4, 0.4, 0.4, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
 }
 
-function lockChangeAlert() {
-    if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
-        document.addEventListener("mousemove", updateMousePosition, false);
-    }
-    else {
-        document.removeEventListener("mousemove", updateMousePosition, false);
-    }
+function initTextures() {
+    var currentIndex = 0
+    var skyboxPaths = ["../TextureMaps/Skybox1/1.jpg", "../TextureMaps/Skybox1/2.jpg", "../TextureMaps/Skybox1/3.jpg",
+                       "../TextureMaps/Skybox1/4.jpg", "../TextureMaps/Skybox1/5.jpg", "../TextureMaps/Skybox1/6.jpg"];
+
+    currentIndex = loadTexture(currentIndex, "../Textures/basicTexture.jpg", "BasicTexture");
+    currentIndex = loadTexture(currentIndex, "../Textures/CockpitMetal.jpg", "CockpitMetal");
+    currentIndex = loadTexture(currentIndex, "../Textures/blackTexture.jpg", "BlackTexture");
+    currentIndex = loadTexture(currentIndex, "../Textures/blackTexture2.jpg", "BlackTexture2");
+    currentIndex = loadTexture(currentIndex, "../Textures/redTexture.jpg", "RedTexture");
+    currentIndex = loadTexture(currentIndex, "../Textures/sunmap.jpg", "sunmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/superearthmap.jpg", "earthmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/moonmap.jpg", "moonmap");
+
+    currentIndex = 0;
+    currentIndex = loadTextureMap(currentIndex, skyboxPaths, "skybox", true);
 }
