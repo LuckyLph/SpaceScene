@@ -18,8 +18,9 @@ var skyboxModelviewLoc;
 var skyboxProjectionLoc;
 var textureBoxLoc;
 
-var colors = [];
+var materials = [];
 var textures = [];
+var bufferedTextures = [];
 var textureMaps = [];
 
 var lightPosition = vec4(20.0, 20.0, 100.0, 1.0);
@@ -30,11 +31,10 @@ var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 var deltaTime = 0;
 var lastFrameTime = 0;
 var timeElapsed = 0;
-var fps;
+var fps = 0;
+var moonAngle = 0;
 
-var firstMouseCallback = true;
 var lastMousePosition = vec2();
-var earthRotationSpeed = 2;
 
 var actualPanelWidth;
 var actualPanelHeight;
@@ -62,6 +62,12 @@ const SphereSlices = 25;
 const SphereStacks = 25;
 const CubeFaceLength = 10;
 const EarthRadius = 60;
+const MoonRadius = 20;
+const MarsRadius = 45;
+
+const EarthRotationSpeed = 2;
+const MoonRotationSpeed = 4;
+const MoonOrbitSpeed = 0.1;
 
 const HemisphereInsideRadius = 5;
 const HemisphereInsideSlices = 25;
@@ -98,4 +104,5 @@ const DefaultSpeed = 25;
 const DefaultSensitivity = 0.6;
 
 const VectorUp = vec3(0, 1, 0);
+const DefaultScale = vec3(1, 1, 1);
 //#endregion

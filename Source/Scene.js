@@ -1,9 +1,9 @@
 var tieFighter;
+var arc170;
 var skybox;
-var sun;
+var mars;
 var earth;
 var moon;
-var sceneObjects = [];
 
 window.onload = function init() {
     try {
@@ -12,19 +12,28 @@ window.onload = function init() {
         initShaderPrograms();
         initEvents();
         initColors();
+        initModels();
         initTextures();
         onresize();
 
-        camera = createCamera(vec3(0, 0, 30), DefaultSpeed, DefaultSensitivity, MaxFov);
-        tieFighter = createTieFighter(vec3(0, 0, 0));
-        earth = createModel(uvSphere(EarthRadius, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(0, 0, 150), vec3(-90, 0, 0), vec3(1, 1, 1)),
-                                     colors["TextureGrey"], textures["earthmap"]);
-        skybox = createSkybox(cube(2000), createTransform(camera.position, RotationForward, vec3(1, 1, 1)), textureMaps["skybox"])
+        camera = createCamera(vec3(0, 0, 250), DefaultSpeed, DefaultSensitivity, MaxFov);
+        tieFighter = createTieFighter(vec3(30, 80, 0));
+        earth = createModel(uvSphere(EarthRadius, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(0, 0, 0), vec3(-90, 0, 0), DefaultScale),
+                                     materials["TextureGrey"], textures["earthmap"]);
+        moon = createModel(uvSphere(MoonRadius, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(180, 0, 0), vec3(-90, 0, 0), DefaultScale),
+                                     materials["TextureGrey"], textures["moonmap"]);
+        mars = createModel(uvSphere(MarsRadius, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(-200, 0, -200), vec3(-90, 0, 0), DefaultScale),
+                                    materials["TextureGrey"], textures["marsmap"]);
+        skybox = createSkybox(cube(2000), createTransform(camera.position, RotationForward, DefaultScale), textureMaps["skybox"])
     }
     catch (e) {
-        document.getElementById("message").innerHTML = "Could not initialize WebGL: " + e;
-        return;
+       document.getElementById("message").innerHTML = "Could not initialize WebGL: " + e;
+       return;
     }
+}
+
+function initModels() {
+    arc170 = createModelFromObjFile(ExtractDataFromOBJ("star-wars-arc-170-pbr.obj"), createTransform(vec3(-30, 80, 0), RotationForward, vec3(1.2, 1.2, 1.2)));
 }
 
 function update(currentFrameTime) {
@@ -39,8 +48,17 @@ function update(currentFrameTime) {
 function updateScene() {
     camera.update();
     skybox.update();
-    earth.transform.rotation[2] = earth.transform.rotation[2] + earthRotationSpeed * deltaTime;
-    //tieFighter.move(scaleVec3(vec3(1, 1, 1), deltaTime));
+    earth.transform.rotation[2] = earth.transform.rotation[2] + EarthRotationSpeed * deltaTime;
+    moon.transform.rotation[2] = moon.transform.rotation[2] + MoonRotationSpeed * deltaTime;
+    mars.transform.rotation[2] = mars.transform.rotation[2] + EarthRotationSpeed * deltaTime;
+
+    var dist = Math.sqrt( Math.pow((earth.transform.coords[0] - moon.transform.coords[0]), 2) + Math.pow((earth.transform.coords[2] - moon.transform.coords[2]), 2));
+    moonAngle = moonAngle +  MoonOrbitSpeed * deltaTime;
+    moonAngle = moonAngle % 360;
+
+    var x = Math.cos(moonAngle) * dist;
+    var z = Math.sin(moonAngle) * dist;
+    moon.transform.coords = vec3(x, moon.transform.coords[1], z);
 }
 
 function updateDeltaTime(currentFrameTime) {
@@ -61,7 +79,10 @@ function render() {
 
     skybox.render();
     tieFighter.render();
+    arc170.render();
     earth.render();
+    moon.render();
+    mars.render();
 }
 
 function initShaderPrograms() {
@@ -121,20 +142,22 @@ function initWebGL() {
         throw "Could not create WebGL context.";
     }
     gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
 }
 
 function initColors() {
-    //Emissive colors
-    colors["Black"] = createColor(vec4(0.1176, 0.1176, 0.1176, 1.0), vec4(0, 0, 0, 1.0), vec4(0, 0, 0, 1.0), 100);
+    //Emissive materials
+    materials["Black"] = createMaterial(vec4(0.1176, 0.1176, 0.1176, 1.0), vec4(0, 0, 0, 1.0), vec4(0, 0, 0, 1.0), 100);
 
-    //Normal colors(with textures)
-    colors["Blue"] = createColor(vec4(0.0, 0.1, 0.3, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["Grey"] = createColor(vec4(0.53, 0.48, 0.46, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["SlightlyGrey"] = createColor(vec4(0.1725, 0.1418, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["LightGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["DarkGrey"] = createColor(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["VeryDarkGrey"] = createColor(vec4(0.1725, 0.1725, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
-    colors["TextureGrey"] = createColor(vec4(0.4, 0.4, 0.4, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    //Normal materials(with textures)
+    materials["Blue"] = createMaterial(vec4(0.0, 0.1, 0.3, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    materials["Grey"] = createMaterial(vec4(0.53, 0.48, 0.46, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    materials["SlightlyGrey"] = createMaterial(vec4(0.1725, 0.1418, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    materials["LightGrey"] = createMaterial(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    materials["DarkGrey"] = createMaterial(vec4(0.3608, 0.3294, 0.3608, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    materials["VeryDarkGrey"] = createMaterial(vec4(0.1725, 0.1725, 0.1725, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
+    materials["TextureGrey"] = createMaterial(vec4(0.4, 0.4, 0.4, 1.0), vec4(0.48, 0.55, 0.69, 1.0), vec4(0.48, 0.55, 0.69, 1.0), 100);
 }
 
 function initTextures() {
@@ -147,9 +170,13 @@ function initTextures() {
     currentIndex = loadTexture(currentIndex, "../Textures/blackTexture.jpg", "BlackTexture");
     currentIndex = loadTexture(currentIndex, "../Textures/blackTexture2.jpg", "BlackTexture2");
     currentIndex = loadTexture(currentIndex, "../Textures/redTexture.jpg", "RedTexture");
-    currentIndex = loadTexture(currentIndex, "../Textures/sunmap.jpg", "sunmap");
     currentIndex = loadTexture(currentIndex, "../Textures/superearthmap.jpg", "earthmap");
     currentIndex = loadTexture(currentIndex, "../Textures/moonmap.jpg", "moonmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/2kmars.jpg", "marsmap");
+
+    for (var i = 0; i < bufferedTextures.length; i++) {
+        currentIndex = loadBufferedTexture(currentIndex, bufferedTextures[i]);
+    }
 
     currentIndex = 0;
     currentIndex = loadTextureMap(currentIndex, skyboxPaths, "skybox", true);

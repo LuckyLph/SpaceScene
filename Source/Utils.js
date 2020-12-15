@@ -26,20 +26,22 @@ function createTransform(coords, rotation, scale){
     return transform;
 }
 
-function createColor(ambient, diffuse, specular, shininess){
-    var color = {}
-    color.ambient = ambient;
-    color.diffuse = diffuse;
-    color.specular = specular;
-    color.shininess = shininess;
+function createMaterial(ambient, diffuse, specular, shininess){
+    var material = {}
+    material.ambient = ambient;
+    material.diffuse = diffuse;
+    material.specular = specular;
+    material.shininess = shininess;
 
-    return color;
+    return material;
 }
 
-function createTexture(textureData, index) {
+function createTexture(textureData, index = 0, path = "") {
     var texture = {};
     texture.data = textureData;
     texture.index = index;
+    texture.glindex = getGlTextureIndex(index);
+    texture.path = path;
 
     return texture;
 }
@@ -49,6 +51,7 @@ function createTextureMap(textureData, images, index) {
     textureMap.textureData = textureData;
     textureMap.images = images;
     textureMap.index = index;
+    textureMap.glindex = getGlTextureIndex(index);
 
     return textureMap;
 }
@@ -83,6 +86,16 @@ function loadTexture(currentIndex, path, name, isLastTexture = false) {
         textureData.image.onload = initLoop;
     textureData.image.src = path;
     textures[name] = createTexture(textureData, currentIndex);
+    return ++currentIndex;
+}
+
+function loadBufferedTexture(currentIndex, texture, isLastTexture = false) {
+    if (isLastTexture) {
+        texture.data.image.onload = initLoop;
+    }
+    texture.data.image.src = texture.path;
+    texture.index = currentIndex;
+    texture.glindex = getGlTextureIndex(currentIndex);
     return ++currentIndex;
 }
 
@@ -257,4 +270,155 @@ function matrixinvert(matrix) {
 
     return result;
 }
+//#endregion
+
+//#region glIndex
+
+function getGlTextureIndex (index) {
+    switch (index) {
+        case 0:
+            return gl.TEXTURE0;
+        case 1:
+            return gl.TEXTURE1;
+        case 2:
+            return gl.TEXTURE2;
+        case 3:
+            return gl.TEXTURE3;
+        case 4:
+            return gl.TEXTURE4;
+        case 5:
+            return gl.TEXTURE5;
+        case 6:
+            return gl.TEXTURE6;
+        case 7:
+            return gl.TEXTURE7;
+        case 8:
+            return gl.TEXTURE8;
+        case 9:
+            return gl.TEXTURE9;
+        case 10:
+            return gl.TEXTURE10;
+        case 11:
+            return gl.TEXTURE11;
+        case 12:
+            return gl.TEXTURE12;
+        case 13:
+            return gl.TEXTURE13;
+        case 14:
+            return gl.TEXTURE14;
+        case 15:
+            return gl.TEXTURE15;
+        case 16:
+            return gl.TEXTURE16;
+        case 17:
+            return gl.TEXTURE17;
+        case 18:
+            return gl.TEXTURE18;
+        case 19:
+            return gl.TEXTURE19;
+        case 20:
+            return gl.TEXTURE20;
+        case 21:
+            return gl.TEXTURE21;
+        case 22:
+            return gl.TEXTURE22;
+        case 23:
+            return gl.TEXTURE23;
+        case 24:
+            return gl.TEXTURE24;
+        case 25:
+            return gl.TEXTURE25;
+        case 26:
+            return gl.TEXTURE26;
+        case 27:
+            return gl.TEXTURE27;
+        case 28:
+            return gl.TEXTURE28;
+        case 29:
+            return gl.TEXTURE29;
+        case 30:
+            return gl.TEXTURE30;
+        case 31:
+            return gl.TEXTURE31;
+        case 32:
+            return gl.TEXTURE32;
+        case 33:
+            return gl.TEXTURE33;
+        case 34:
+            return gl.TEXTURE34;
+        case 35:
+            return gl.TEXTURE35;
+        case 36:
+            return gl.TEXTURE36;
+        case 37:
+            return gl.TEXTURE37;
+        case 38:
+            return gl.TEXTURE38;
+        case 39:
+            return gl.TEXTURE39;
+        case 40:
+            return gl.TEXTURE40;
+        case 41:
+            return gl.TEXTURE41;
+        case 42:
+            return gl.TEXTURE42;
+        case 43:
+            return gl.TEXTURE43;
+        case 44:
+            return gl.TEXTURE44;
+        case 45:
+            return gl.TEXTURE45;
+        case 46:
+            return gl.TEXTURE46;
+        case 47:
+            return gl.TEXTURE47;
+        case 48:
+            return gl.TEXTURE48;
+        case 49:
+            return gl.TEXTURE49;
+        case 50:
+            return gl.TEXTURE50;
+        case 51:
+            return gl.TEXTURE51;
+        case 52:
+            return gl.TEXTURE52;
+        case 53:
+            return gl.TEXTURE53;
+        case 54:
+            return gl.TEXTURE54;
+        case 55:
+            return gl.TEXTURE55;
+        case 56:
+            return gl.TEXTURE56;
+        case 57:
+            return gl.TEXTURE57;
+        case 58:
+            return gl.TEXTURE58;
+        case 59:
+            return gl.TEXTURE59;
+        case 60:
+            return gl.TEXTURE60;
+        case 61:
+            return gl.TEXTURE61;
+        case 62:
+            return gl.TEXTURE62;
+        case 63:
+            return gl.TEXTURE63;
+        case 64:
+            return gl.TEXTURE64;
+        case 65:
+            return gl.TEXTURE65;
+        case 66:
+            return gl.TEXTURE66;
+        case 67:
+            return gl.TEXTURE67;
+        case 68:
+            return gl.TEXTURE68;
+        case 69:
+            return gl.TEXTURE69;
+        case 70:
+            return gl.TEXTURE70;
+    }
+}
+
 //#endregion

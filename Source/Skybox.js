@@ -36,27 +36,21 @@ function createSkybox(modelData, transform, textureMap) {
         gl.uniformMatrix4fv(skyboxModelviewLoc, false, flatten(modelview));
         gl.uniformMatrix4fv(skyboxProjectionLoc, false, flatten(camera.getProjectionMatrix()));
 
-        handleTextureIndex(textureMap.index);
+        gl.uniform1i(textureBoxLoc, this.textureMap.index);
+        gl.activeTexture(this.textureMap.glindex);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
         gl.vertexAttribPointer(skyboxVcoordsLoc, 3, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
+        gl.cullFace(gl.FRONT);
         gl.drawElements(gl.TRIANGLES, this.count, gl.UNSIGNED_SHORT, 0);
         gl.useProgram(prog);
+        gl.cullFace(gl.BACK);
     }
 
     skybox.update = function () {
         this.transform.coords = camera.position;
-    }
-
-    function handleTextureIndex(index) {
-        switch (index) {
-            case 0:
-                gl.activeTexture(gl.TEXTURE0);
-                gl.uniform1i(textureBoxLoc, index);
-                break;
-        }
     }
 
     gl.useProgram(prog);
