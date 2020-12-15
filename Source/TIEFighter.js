@@ -7,88 +7,88 @@ function createTieFighter(position) {
     
     //Cockpit
     currentCoords = position;
-    createSphere(currentCoords, RotationForward, CockpitScale, colors["LightGrey"], textures["BasicTexture"]);
+    createSphere(currentCoords, RotationForward, CockpitScale, materials["LightGrey"], textures["BasicTexture"]);
     currentCoords = add(position, vec3(0, 0, 2.2));
-    createHemisphereInside(currentCoords, vec3(180, 0, 0), CockpitWindowScale, colors["TextureGrey"], textures["BlackTexture2"]);
+    createHemisphereInside(currentCoords, vec3(180, 0, 0), CockpitWindowScale, materials["TextureGrey"], textures["BlackTexture2"]);
 
     //Engine
     currentCoords = add(position, vec3(0, 0, -3.8));
-    createRectangle(currentCoords, RotationForward, EngineSquareScale, CubeFaceLength, colors["VeryDarkGrey"], textures["BasicTexture"])
+    createRectangle(currentCoords, RotationForward, EngineSquareScale, CubeFaceLength, materials["VeryDarkGrey"], textures["BasicTexture"])
     currentCoords = add(position, vec3(0, 0, -4.8));
-    createTorus(currentCoords, RotationForward, EngineTorusScale, colors["TextureGrey"], textures["BlackTexture"]);
+    createTorus(currentCoords, RotationForward, EngineTorusScale, materials["TextureGrey"], textures["BlackTexture"]);
     currentCoords = add(position, vec3(0, 0, -2.65));
-    createHemisphereOutside(currentCoords, RotationForward, EngineHemisphereScale, colors["TextureGrey"], textures["BasicTexture"]);
+    createHemisphereOutside(currentCoords, RotationForward, EngineHemisphereScale, materials["TextureGrey"], textures["BasicTexture"]);
 
     //Arms
     currentCoords = add(position, vec3(-DistanceBetweenObjects, 0, 0));
-    createCylinder(currentCoords, RotationRight, ArmScale, false, false, colors["TextureGrey"], textures["CockpitMetal"]);
+    createCylinder(currentCoords, RotationRight, ArmScale, false, false, materials["TextureGrey"], textures["CockpitMetal"]);
     currentCoords = add(position, vec3(DistanceBetweenObjects, 0, 0));
-    createCylinder(currentCoords, RotationRight, ArmScale, false, false, colors["TextureGrey"], textures["CockpitMetal"]);
+    createCylinder(currentCoords, RotationRight, ArmScale, false, false, materials["TextureGrey"], textures["CockpitMetal"]);
 
     currentCoords = add(position, vec3(DistanceBetweenObjects, 0, DistanceBetweenObjects / 4.5));
-    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 60)), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 60)), ArmPrismScale, false, false, materials["LightGrey"], null);
     currentCoords = add(position, vec3(DistanceBetweenObjects, DistanceBetweenObjects / 4.5, 0));
-    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 90)), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 90)), ArmPrismScale, false, false, materials["LightGrey"], null);
     currentCoords = add(position, vec3(DistanceBetweenObjects, 0, -DistanceBetweenObjects / 4.5));
-    createPrism(currentCoords, add(RotationRight, position), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 0)), ArmPrismScale, false, false, materials["LightGrey"], null);
     currentCoords = add(position, vec3(DistanceBetweenObjects, -DistanceBetweenObjects / 4.5, 0));
-    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 30)), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 30)), ArmPrismScale, false, false, materials["LightGrey"], null);
 
     currentCoords = add(position, vec3(-DistanceBetweenObjects, 0, DistanceBetweenObjects / 4.5));
-    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 60)), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 60)), ArmPrismScale, false, false, materials["LightGrey"], null);
     currentCoords = add(position, vec3(-DistanceBetweenObjects, DistanceBetweenObjects / 4.5, 0));
-    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 90)), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 90)), ArmPrismScale, false, false, materials["LightGrey"], null);
     currentCoords = add(position, vec3(-DistanceBetweenObjects, 0, -DistanceBetweenObjects / 4.5));
-    createPrism(currentCoords, add(RotationRight, position), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 0)), ArmPrismScale, false, false, materials["LightGrey"], null);
     currentCoords = add(position, vec3(-DistanceBetweenObjects, -DistanceBetweenObjects / 4.5, 0));
-    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 30)), ArmPrismScale, false, false, colors["LightGrey"], null);
+    createPrism(currentCoords, add(RotationRight, vec3(0, 0, 30)), ArmPrismScale, false, false, materials["LightGrey"], null);
 
     //Wings
     currentCoords = add(position, vec3(DistanceBetweenObjects * 1.5, 0, 0));
-    createRectangle(currentCoords, RotationForward, WingScale, CubeFaceLength, colors["Black"], null);
+    createRectangle(currentCoords, RotationForward, WingScale, CubeFaceLength, materials["Black"], null);
     currentCoords = add(position, vec3(-DistanceBetweenObjects * 1.5, 0, 0));
-    createRectangle(currentCoords, RotationForward, WingScale, CubeFaceLength, colors["Black"], null);
+    createRectangle(currentCoords, RotationForward, WingScale, CubeFaceLength, materials["Black"], null);
 
     currentCoords = add(position, vec3(DistanceBetweenObjects * 1.55, 0, 0));
-    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, colors["Grey"], null);
+    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, materials["Grey"], null);
 
     currentCoords = add(model.position, vec3(DistanceBetweenObjects * 1.45, 0, 0));
-    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, colors["Grey"], null);
+    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, materials["Grey"], null);
 
     currentCoords = add(model.position, vec3(-DistanceBetweenObjects * 1.55, 0, 0));
-    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, colors["Grey"], null);
+    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, materials["Grey"], null);
 
     currentCoords = add(model.position, vec3(-DistanceBetweenObjects * 1.45, 0, 0));
-    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, colors["Grey"], null);
-    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, colors["Grey"], null);
+    createRectangle(currentCoords, RotationForward, WingCenterScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, vec3(-31.5, 0, 0), WingXScale, CubeFaceLength, materials["Grey"], null);
+    createRectangle(currentCoords, RotationUp, WingHorizontalRectangleScale, CubeFaceLength, materials["Grey"], null);
 
     //Wing Prisms
     currentCoords = add(model.position, vec3(DistanceBetweenObjects * 1.499, 0, DistanceBetweenObjects * 1.165));
-    createPrism(currentCoords, vec3(0, -90, 0), WingPrismScale, false, false, colors["Black"], null);
+    createPrism(currentCoords, vec3(0, -90, 0), WingPrismScale, false, false, materials["Black"], null);
     currentCoords = add(model.position, vec3(DistanceBetweenObjects * 1.499, 0, -DistanceBetweenObjects * 1.165));
-    createPrism(currentCoords, RotationRight, WingPrismScale, false, false, colors["Black"], null);
+    createPrism(currentCoords, RotationRight, WingPrismScale, false, false, materials["Black"], null);
 
     currentCoords = add(model.position, vec3(-DistanceBetweenObjects * 1.499, 0, DistanceBetweenObjects * 1.165));
-    createPrism(currentCoords, vec3(0, -90, 0), WingPrismScale, false, false, colors["Black"], null, null);
+    createPrism(currentCoords, vec3(0, -90, 0), WingPrismScale, false, false, materials["Black"], null, null);
     currentCoords = add(model.position, vec3(-DistanceBetweenObjects * 1.499, 0, -DistanceBetweenObjects * 1.165));
-    createPrism(currentCoords, RotationRight, WingPrismScale, false, false, colors["Black"], null);
+    createPrism(currentCoords, RotationRight, WingPrismScale, false, false, materials["Black"], null);
 
     //Guns
     currentCoords = add(model.position, vec3(-DistanceBetweenObjects / 3, -DistanceBetweenObjects / 2.5, DistanceBetweenObjects / 2.5));
-    createCylinder(currentCoords, RotationForward, GunScale, false, false, colors["TextureGrey"], textures["RedTexture"]);
+    createCylinder(currentCoords, RotationForward, GunScale, false, false, materials["TextureGrey"], textures["RedTexture"]);
     currentCoords = add(model.position, vec3(DistanceBetweenObjects / 3, -DistanceBetweenObjects / 2.5, DistanceBetweenObjects / 2.5));
-    createCylinder(currentCoords, RotationForward, GunScale, false, false, colors["TextureGrey"], textures["RedTexture"]);
+    createCylinder(currentCoords, RotationForward, GunScale, false, false, materials["TextureGrey"], textures["RedTexture"]);
 
     function createSphere(coords, rotation, scale, color, texture) {
         model.phongModels.push(createModel(uvSphere(SphereRadius, SphereSlices, SphereStacks), createTransform(coords, rotation, scale), color, texture));

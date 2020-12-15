@@ -6,7 +6,6 @@ function createCamera(position, speed, sensitivity, zoom) {
     camera.zoom = zoom;
     camera.yaw = -90;
     camera.pitch = 0;
-    camera.target = vec3();
     camera.forward = vec3();
     camera.up = vec3();
     camera.right = vec3();
