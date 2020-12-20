@@ -1,6 +1,3 @@
-// The following function is used to create an "object" (called "model") containing all the informations needed
-// to draw a particular element (sphere, cylinder, cube,...). 
-
 function createModel(modelData, transform, material, texture) {
 
 	var model = {};
@@ -75,8 +72,7 @@ function createModel(modelData, transform, material, texture) {
     return model;
 }
 
-function createModelFromObjFile(ptr, transform) {
-	
+function createModelFromObjFile(ptr, transform) {	
     var i = 0;
     var j = 0;
     var model = {};

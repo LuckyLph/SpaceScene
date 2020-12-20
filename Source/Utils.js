@@ -79,6 +79,27 @@ function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
     return prog;
 }
 
+function colorCube() {
+    var pointsArray = [];
+    var colorsArray = [];
+    var texCoordsArray = [];
+    var numVertices = 36
+
+    quad(1, 0, 3, 2, pointsArray, colorsArray, texCoordsArray);
+    quad(2, 3, 7, 6, pointsArray, colorsArray, texCoordsArray);
+    quad(3, 0, 4, 7, pointsArray, colorsArray, texCoordsArray);
+    quad(6, 5, 1, 2, pointsArray, colorsArray, texCoordsArray);
+    quad(4, 5, 6, 7, pointsArray, colorsArray, texCoordsArray);
+    quad(5, 4, 0, 1, pointsArray, colorsArray, texCoordsArray);
+
+    return {
+        pointsArray: new Float32Array(pointsArray),
+        colorsArray: new Float32Array(colorsArray),
+        texCoordsArray: new Float32Array(texCoordsArray),
+        numVertices: numVertices
+     }
+}
+
 function loadTexture(currentIndex, path, name, isLastTexture = false) {
     var textureData = gl.createTexture();
     textureData.image = new Image();
@@ -203,15 +224,6 @@ function createIdentityMatrix() {
 
 function degreeToRadian(degrees) {
     return degrees * Math.PI / 180;
-}
-
-function scaleVec3(a, b) {
-    var out = [];
-    out[0] = a[0] * b;
-    out[1] = a[1] * b;
-    out[2] = a[2] * b;
-  
-    return out; 
 }
 
 function unflatten(matrix) {

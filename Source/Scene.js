@@ -4,6 +4,9 @@ var skybox;
 var mars;
 var earth;
 var moon;
+var cube;
+
+var distanceBetweenMoonAndEarth;
 
 window.onload = function init() {
     try {
@@ -11,7 +14,7 @@ window.onload = function init() {
         initWebGL();
         initShaderPrograms();
         initEvents();
-        initColors();
+        initMaterials();
         initModels();
         initTextures();
         onresize();
@@ -25,6 +28,10 @@ window.onload = function init() {
         mars = createModel(uvSphere(MarsRadius, SphereSlices * 2, SphereStacks * 2), createTransform(vec3(-200, 0, -200), vec3(-90, 0, 0), DefaultScale),
                                     materials["TextureGrey"], textures["marsmap"]);
         skybox = createSkybox(cube(2000), createTransform(camera.position, RotationForward, DefaultScale), textureMaps["skybox"])
+        cube = createTranslucidCube(colorCube(), createTransform(0, 0, 80), textures["cubesig"]);
+
+        distanceBetweenMoonAndEarth = Math.sqrt( Math.pow((earth.transform.coords[0] - moon.transform.coords[0]), 2) +
+                                      Math.pow((earth.transform.coords[2] - moon.transform.coords[2]), 2));
     }
     catch (e) {
        document.getElementById("message").innerHTML = "Could not initialize WebGL: " + e;
@@ -33,7 +40,7 @@ window.onload = function init() {
 }
 
 function initModels() {
-    arc170 = createModelFromObjFile(ExtractDataFromOBJ("star-wars-arc-170-pbr.obj"), createTransform(vec3(-30, 80, 0), RotationForward, vec3(1.2, 1.2, 1.2)));
+    arc170 = createModelFromObjFile(ExtractDataFromOBJ("star-wars-arc-170-pbr.obj"), createTransform(vec3(-30, 80, 0), RotationForward, Arc170Scale));
 }
 
 function update(currentFrameTime) {
@@ -48,16 +55,14 @@ function update(currentFrameTime) {
 function updateScene() {
     camera.update();
     skybox.update();
-    earth.transform.rotation[2] = earth.transform.rotation[2] + EarthRotationSpeed * deltaTime;
-    moon.transform.rotation[2] = moon.transform.rotation[2] + MoonRotationSpeed * deltaTime;
-    mars.transform.rotation[2] = mars.transform.rotation[2] + EarthRotationSpeed * deltaTime;
+    earth.transform.rotation[2] = (earth.transform.rotation[2] + EarthRotationSpeed * deltaTime) % 360;
+    moon.transform.rotation[2] = (moon.transform.rotation[2] + MoonRotationSpeed * deltaTime) % 360;
+    mars.transform.rotation[2] = (mars.transform.rotation[2] + EarthRotationSpeed * deltaTime) % 360;
 
-    var dist = Math.sqrt( Math.pow((earth.transform.coords[0] - moon.transform.coords[0]), 2) + Math.pow((earth.transform.coords[2] - moon.transform.coords[2]), 2));
-    moonAngle = moonAngle +  MoonOrbitSpeed * deltaTime;
-    moonAngle = moonAngle % 360;
+    moonAngle = (moonAngle + MoonOrbitSpeed * deltaTime) % 360;
 
-    var x = Math.cos(moonAngle) * dist;
-    var z = Math.sin(moonAngle) * dist;
+    var x = Math.cos(moonAngle) * distanceBetweenMoonAndEarth;
+    var z = Math.sin(moonAngle) * distanceBetweenMoonAndEarth;
     moon.transform.coords = vec3(x, moon.transform.coords[1], z);
 }
 
@@ -83,6 +88,7 @@ function render() {
     earth.render();
     moon.render();
     mars.render();
+    cube.render();
 }
 
 function initShaderPrograms() {
@@ -107,13 +113,24 @@ function initShaderPrograms() {
     vertexShaderSource = getTextContent("vshaderskybox");
     fragmentShaderSource = getTextContent("fshaderskybox");
     progSkybox = createProgram(gl, vertexShaderSource, fragmentShaderSource);
-    gl.useProgram(progSkybox);
 
     skyboxVcoordsLoc = gl.getAttribLocation(progSkybox, "vcoords");
     skyboxModelviewLoc = gl.getUniformLocation(progSkybox, "modelview");
     skyboxProjectionLoc = gl.getUniformLocation(progSkybox, "projection");
     textureBoxLoc = gl.getUniformLocation(progSkybox, "textureBox");
-    gl.useProgram(prog);
+
+    // load shaders (for the translucid cube)
+    vertexShaderSource = getTextContent("vshadertranscube");
+    fragmentShaderSource = getTextContent("fshadertranscube");
+    progCube = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+
+    cubeModelViewLoc = gl.getUniformLocation(progCube, "modelView");
+    cubeProjectionLoc = gl.getUniformLocation(progCube, "projection");
+    cubeAlphaLoc = gl.getUniformLocation(progCube, "alpha");
+    cubeVColorLoc = gl.getAttribLocation(progCube, "vColor");
+    cubeVPositionLoc = gl.getAttribLocation(progCube, "vPosition");
+    cubeVTexCoordLoc = gl.getAttribLocation(progCube, "vTexCoord");
+    cubeTextureLoc = gl.getUniformLocation(progCube, "texture");
 }
 
 function initEvents() {
@@ -142,11 +159,11 @@ function initWebGL() {
         throw "Could not create WebGL context.";
     }
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
+    //gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 }
 
-function initColors() {
+function initMaterials() {
     //Emissive materials
     materials["Black"] = createMaterial(vec4(0.1176, 0.1176, 0.1176, 1.0), vec4(0, 0, 0, 1.0), vec4(0, 0, 0, 1.0), 100);
 
@@ -173,6 +190,7 @@ function initTextures() {
     currentIndex = loadTexture(currentIndex, "../Textures/superearthmap.jpg", "earthmap");
     currentIndex = loadTexture(currentIndex, "../Textures/moonmap.jpg", "moonmap");
     currentIndex = loadTexture(currentIndex, "../Textures/2kmars.jpg", "marsmap");
+    currentIndex = loadTexture(currentIndex, "../Textures/SA2011_black.gif", "cubesig");
 
     for (var i = 0; i < bufferedTextures.length; i++) {
         currentIndex = loadBufferedTexture(currentIndex, bufferedTextures[i]);

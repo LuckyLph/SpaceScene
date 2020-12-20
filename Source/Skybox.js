@@ -1,6 +1,4 @@
 function createSkybox(modelData, transform, textureMap) {
-    gl.useProgram(progSkybox);
-
     var skybox = {};
     skybox.coordsBuffer = gl.createBuffer();
     skybox.indexBuffer = gl.createBuffer();
@@ -45,14 +43,12 @@ function createSkybox(modelData, transform, textureMap) {
 
         gl.cullFace(gl.FRONT);
         gl.drawElements(gl.TRIANGLES, this.count, gl.UNSIGNED_SHORT, 0);
-        gl.useProgram(prog);
         gl.cullFace(gl.BACK);
+        gl.useProgram(prog);
     }
 
     skybox.update = function () {
         this.transform.coords = camera.position;
     }
-
-    gl.useProgram(prog);
     return skybox;
 }

@@ -3,6 +3,7 @@ var gl;              //The webgl context.
 var canvas;          //The web canvas
 var prog;            //Shader program
 var progSkybox;
+var progCube;
 var camera;
 
 var coordsLoc;
@@ -12,6 +13,14 @@ var projectionLoc;
 var modelviewLoc;
 var normalMatrixLoc;
 var textureIndexLoc;
+
+var cubeAlphaLoc;
+var cubeVColorLoc;
+var cubeVPositionLoc;
+var cubeVTexCoordLoc;
+var cubeModelViewLoc;
+var cubeProjectionLoc;
+var cubeTextureLoc;
 
 var skyboxVcoordsLoc;
 var skyboxModelviewLoc;
@@ -92,6 +101,7 @@ const ArmPrismScale = vec3(0.1, 0.1, 0.4);
 const EngineSquareScale = vec3(0.2, 0.2, 0.2);
 const EngineTorusScale = vec3(0.2, 0.2, 0.2);
 const EngineHemisphereScale = vec3(0.4, 0.4, 0.4);
+const Arc170Scale = vec3(1.2, 1.2, 1.2);
 
 const RotationForward = vec3(0, 0, 0);
 const RotationUp = vec3(90, 0, 0);
