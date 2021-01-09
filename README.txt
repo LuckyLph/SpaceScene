@@ -3,3 +3,4 @@ Contrôles : -WASD pour déplacer caméra
 			-shift pour aller plus vite
 			-Q pour descendre et E pour monter
 			-Escape pour libérer la souris
+			-Scroll pour zoom
