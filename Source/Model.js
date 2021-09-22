@@ -1,7 +1,6 @@
 function createModel(modelData, transform, material, texture) {
 
-	var model = {};
-	
+    var model = {};
     model.coordsBuffer = gl.createBuffer();
     model.normalBuffer = gl.createBuffer();
     model.textureBuffer = gl.createBuffer();
@@ -77,17 +76,17 @@ function createModelFromObjFile(ptr, transform) {
     var j = 0;
     var model = {};
 	
-	model.numberofelements = ptr.numberofelements;
-	model.coordsBuffer = [];
-	model.normalBuffer = [];
-	model.textureBuffer = [];
-	model.indexBuffer = [];
-	model.count = [];
+    model.numberofelements = ptr.numberofelements;
+    model.coordsBuffer = [];
+    model.normalBuffer = [];
+    model.textureBuffer = [];
+    model.indexBuffer = [];
+    model.count = [];
     model.materials = [];
     model.textures = [];
     model.transform = transform;
-	
-	for(i=0; i < ptr.numberofelements; i++){
+
+    for(i=0; i < ptr.numberofelements; i++){
 	
 		model.coordsBuffer.push(gl.createBuffer());
 		model.normalBuffer.push(gl.createBuffer());
